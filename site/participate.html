@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participate — Funds for Focus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    .ff-screen { height: auto !important; overflow: visible !important; }
+    .ff-screen-scroll { height: auto !important; overflow: visible !important; }
+    .chip-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-2);
+      transition: background .12s, border-color .12s, color .12s;
+    }
+    .chip-btn.active {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <script src="js/data.js"></script>
+  <script type="text/babel" src="js/lib.js"></script>
+  <script type="text/babel">
+    const GENERAL_SIGNUP_FORM_URL = ""; // ← Paste your Google Form URL for general participant signup here
+
+    function ChipGroup({ options, value, onChange, multi }) {
+      function toggle(opt) {
+        if (multi) {
+          const arr = Array.isArray(value) ? value : [];
+          onChange(arr.includes(opt) ? arr.filter(v => v !== opt) : [...arr, opt]);
+        } else {
+          onChange(opt);
+        }
+      }
+      const selected = Array.isArray(value) ? value : (value ? [value] : []);
+      return (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {options.map(opt => (
+            <button key={opt} type="button" className={"chip-btn" + (selected.includes(opt) ? " active" : "")} onClick={() => toggle(opt)}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    function FFParticipate() {
+      const [step, setStep] = React.useState(1);
+      const [submitted, setSubmitted] = React.useState(false);
+      const [form, setForm] = React.useState({
+        // Step 1 — Contact
+        firstName: "", lastName: "", email: "", phone: "",
+        // Step 2 — Demographics
+        age: "", gender: "", ethnicity: "", city: "", state: "", zip: "", income: "", employment: "",
+        // Step 3 — Lifestyle
+        householdSize: "", hasKids: "", interests: [],
+        // Step 4 — Consent
+        consent: false,
+      });
+      const totalSteps = 4;
+
+      function set(key, val) { setForm(f => ({ ...f, [key]: val })); }
+
+      function handleSubmit() {
+        if (GENERAL_SIGNUP_FORM_URL) {
+          window.open(GENERAL_SIGNUP_FORM_URL, "_blank");
+        }
+        const body = [
+          "First Name: " + form.firstName,
+          "Last Name: " + form.lastName,
+          "Email: " + form.email,
+          "Phone: " + form.phone,
+          "Age: " + form.age,
+          "Gender: " + form.gender,
+          "Ethnicity: " + form.ethnicity,
+          "City: " + form.city,
+          "State: " + form.state,
+          "Zip: " + form.zip,
+          "Income: " + form.income,
+          "Employment: " + form.employment,
+          "Household size: " + form.householdSize,
+          "Has kids: " + form.hasKids,
+          "Interests: " + (form.interests || []).join(", "),
+        ].join("%0A");
+        window.location.href = "mailto:" + window.FF_EMAIL + "?subject=New Participant Application&body=" + body;
+        setSubmitted(true);
+      }
+
+      const steps = [
+        { n: 1, t: "Contact" },
+        { n: 2, t: "Demographics" },
+        { n: 3, t: "Lifestyle" },
+        { n: 4, t: "Consent & submit" },
+      ];
+
+      if (submitted) {
+        return (
+          <div className="ff-screen ff-screen-scroll">
+            <FFNav active="participate" />
+            <section style={{ padding: "120px 48px", maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+              <div className="ff-eyebrow" style={{ marginBottom: 24, color: "var(--earn-deep)" }}>Application received</div>
+              <h1 className="ff-display" style={{ fontSize: 72, lineHeight: 0.95, marginBottom: 24 }}>
+                You're in our <em style={{ fontStyle: "italic", color: "var(--earn-deep)" }}>database.</em>
+              </h1>
+              <p style={{ fontSize: 18, color: "var(--ink-2)", lineHeight: 1.5, maxWidth: 520, margin: "0 auto 40px" }}>
+                We'll reach out when a study matches your profile. In the meantime, browse open projects — you can apply directly to any that fit.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                <a href="projects.html" className="ff-btn ff-btn--earn ff-btn--lg">Browse open projects →</a>
+                <a href="index.html" className="ff-btn ff-btn--ghost ff-btn--lg">Back to home</a>
+              </div>
+            </section>
+            <FFFooter />
+          </div>
+        );
+      }
+
+      return (
+        <div className="ff-screen ff-screen-scroll">
+          <FFNav active="participate" />
+
+          {/* Hero */}
+          <section style={{ padding: "60px 48px", maxWidth: 1440, margin: "0 auto" }}>
+            <div className="ff-eyebrow" style={{ marginBottom: 14 }}>Participant application · {step} of {totalSteps}</div>
+            <h1 className="ff-display" style={{ fontSize: "clamp(52px, 6vw, 84px)", lineHeight: 0.95, letterSpacing: "-0.02em" }}>
+              Tell us about<br />yourself.
+            </h1>
+            <p style={{ fontSize: 17, color: "var(--ink-2)", maxWidth: 560, marginTop: 18, lineHeight: 1.5 }}>
+              We'll match you to upcoming studies that fit your demographics. Takes about 4 minutes. U.S. residents only.
+            </p>
+          </section>
+
+          {/* Stepper */}
+          <section style={{ padding: "0 48px", maxWidth: 1440, margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }}>
+              {steps.map(s => (
+                <div key={s.n} style={{ paddingTop: 14, borderTop: "2px solid " + (s.n <= step ? "var(--earn)" : "var(--line)"), display: "flex", flexDirection: "column", gap: 4 }}>
+                  <span className="ff-mono" style={{ fontSize: 11, color: s.n <= step ? "var(--earn-deep)" : "var(--ink-3)" }}>STEP {String(s.n).padStart(2, "0")}</span>
+                  <span style={{ fontSize: 15, color: s.n <= step ? "var(--ink)" : "var(--ink-3)", fontWeight: s.n === step ? 500 : 400 }}>{s.t}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Form card */}
+          <section style={{ padding: "60px 48px 80px", maxWidth: 920, margin: "0 auto" }}>
+            <div className="ff-card" style={{ padding: 48 }}>
+
+              {/* Step 1: Contact */}
+              {step === 1 && (
+                <>
+                  <h2 className="ff-display" style={{ fontSize: 40, marginBottom: 8 }}>Contact info</h2>
+                  <p style={{ fontSize: 15, color: "var(--ink-3)", marginBottom: 32 }}>Used only to contact you about study opportunities. Never shared or sold.</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                    <div className="ff-field"><label>First name *</label><input className="ff-input" value={form.firstName} onChange={e => set("firstName", e.target.value)} placeholder="Jane" /></div>
+                    <div className="ff-field"><label>Last name *</label><input className="ff-input" value={form.lastName} onChange={e => set("lastName", e.target.value)} placeholder="Smith" /></div>
+                    <div className="ff-field" style={{ gridColumn: "span 2" }}><label>Email address *</label><input className="ff-input" type="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="jane@email.com" /></div>
+                    <div className="ff-field" style={{ gridColumn: "span 2" }}><label>Phone number</label><input className="ff-input" type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="(555) 555-5555" /></div>
+                  </div>
+                </>
+              )}
+
+              {/* Step 2: Demographics */}
+              {step === 2 && (
+                <>
+                  <h2 className="ff-display" style={{ fontSize: 40, marginBottom: 8 }}>Demographics</h2>
+                  <p style={{ fontSize: 15, color: "var(--ink-3)", marginBottom: 32 }}>This helps us match you to relevant studies. Never shared without your consent.</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                    <div className="ff-field" style={{ gridColumn: "span 2" }}>
+                      <label>Age *</label>
+                      <ChipGroup options={["18-24","25-34","35-44","45-54","55-64","65+"]} value={form.age} onChange={v => set("age", v)} />
+                    </div>
+                    <div className="ff-field">
+                      <label>Gender</label>
+                      <select className="ff-select" value={form.gender} onChange={e => set("gender", e.target.value)}>
+                        <option value="">Select…</option>
+                        <option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option>
+                      </select>
+                    </div>
+                    <div className="ff-field">
+                      <label>Ethnicity (optional)</label>
+                      <select className="ff-select" value={form.ethnicity} onChange={e => set("ethnicity", e.target.value)}>
+                        <option value="">Select…</option>
+                        <option>Black / African American</option><option>Hispanic / Latino</option><option>White / Caucasian</option>
+                        <option>Asian / Pacific Islander</option><option>Mixed / Multiracial</option><option>Other / Prefer not to say</option>
+                      </select>
+                    </div>
+                    <div className="ff-field"><label>City *</label><input className="ff-input" value={form.city} onChange={e => set("city", e.target.value)} placeholder="Miami" /></div>
+                    <div className="ff-field">
+                      <label>State *</label>
+                      <select className="ff-select" value={form.state} onChange={e => set("state", e.target.value)}>
+                        <option value="">Select…</option>
+                        {["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => <option key={s}>{s}</option>)}
+                      </select>
+                    </div>
+                    <div className="ff-field"><label>Zip code</label><input className="ff-input" value={form.zip} onChange={e => set("zip", e.target.value)} placeholder="33101" maxLength={5} /></div>
+                    <div className="ff-field">
+                      <label>Household income</label>
+                      <select className="ff-select" value={form.income} onChange={e => set("income", e.target.value)}>
+                        <option value="">Select…</option>
+                        <option>Under $25k</option><option>$25k – $50k</option><option>$50k – $75k</option>
+                        <option>$75k – $100k</option><option>$100k – $150k</option><option>$150k+</option>
+                        <option>Prefer not to say</option>
+                      </select>
+                    </div>
+                    <div className="ff-field" style={{ gridColumn: "span 2" }}>
+                      <label>Employment status</label>
+                      <ChipGroup options={["Full-time","Part-time","Self-employed","Student","Retired","Unemployed"]} value={form.employment} onChange={v => set("employment", v)} />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Step 3: Lifestyle */}
+              {step === 3 && (
+                <>
+                  <h2 className="ff-display" style={{ fontSize: 40, marginBottom: 8 }}>Lifestyle</h2>
+                  <p style={{ fontSize: 15, color: "var(--ink-3)", marginBottom: 32 }}>Helps us match you to the right study types. Select all that apply.</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                    <div className="ff-field">
+                      <label>Household size</label>
+                      <ChipGroup options={["1","2","3","4","5+"]} value={form.householdSize} onChange={v => set("householdSize", v)} />
+                    </div>
+                    <div className="ff-field">
+                      <label>Children in household</label>
+                      <ChipGroup options={["Yes, under 5","Yes, 5-12","Yes, 13-17","No children"]} value={form.hasKids} onChange={v => set("hasKids", v)} />
+                    </div>
+                    <div className="ff-field" style={{ gridColumn: "span 2" }}>
+                      <label>Interests & categories (select all that apply)</label>
+                      <ChipGroup
+                        options={["Food & beverage","Technology","Health & wellness","Beauty & personal care","Finance","Automotive","Home & garden","Parenting","Fashion","Sports & fitness","Travel","Media & entertainment"]}
+                        value={form.interests}
+                        onChange={v => set("interests", v)}
+                        multi
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Step 4: Consent */}
+              {step === 4 && (
+                <>
+                  <h2 className="ff-display" style={{ fontSize: 40, marginBottom: 8 }}>Almost done.</h2>
+                  <p style={{ fontSize: 15, color: "var(--ink-3)", marginBottom: 32 }}>Review and submit your application.</p>
+
+                  {/* Summary */}
+                  <div style={{ background: "var(--paper-2)", padding: 24, marginBottom: 32, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, fontSize: 14 }}>
+                    {[
+                      ["Name", form.firstName + " " + form.lastName],
+                      ["Email", form.email],
+                      ["Age", form.age],
+                      ["Location", [form.city, form.state].filter(Boolean).join(", ")],
+                      ["Employment", form.employment],
+                      ["Income", form.income],
+                    ].map(([k, v]) => v && (
+                      <div key={k}>
+                        <div className="ff-eyebrow" style={{ marginBottom: 4 }}>{k}</div>
+                        <div style={{ color: "var(--ink)" }}>{v}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <label style={{ display: "flex", gap: 12, cursor: "pointer", marginBottom: 28, alignItems: "flex-start" }}>
+                    <input type="checkbox" checked={form.consent} onChange={e => set("consent", e.target.checked)} style={{ marginTop: 3, flexShrink: 0, accentColor: "var(--earn)" }} />
+                    <span style={{ fontSize: 14, color: "var(--ink-2)", lineHeight: 1.6 }}>
+                      I confirm I am a U.S. resident 18 or older. I agree to be contacted about upcoming studies. I understand participation is voluntary and I can opt out at any time. My information will not be shared with third parties without my consent.
+                    </span>
+                  </label>
+                </>
+              )}
+
+              <hr className="ff-rule" style={{ margin: "32px 0" }} />
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {step > 1
+                  ? <button className="ff-btn ff-btn--ghost" onClick={() => setStep(s => s - 1)}>← Back</button>
+                  : <span />
+                }
+                <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+                  <span className="ff-mono" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+                    {step === 1 ? "~ 4 minutes left" : step === 2 ? "~ 3 minutes left" : step === 3 ? "~ 1 minute left" : "Ready to submit"}
+                  </span>
+                  {step < 4
+                    ? <button className="ff-btn ff-btn--earn" onClick={() => setStep(s => s + 1)}>Continue <span className="ff-arrow">→</span></button>
+                    : <button className="ff-btn ff-btn--earn" onClick={handleSubmit} disabled={!form.consent} style={{ opacity: form.consent ? 1 : 0.5 }}>Submit application <span className="ff-arrow">→</span></button>
+                  }
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <FFFooter />
+        </div>
+      );
+    }
+
+    window.__dataReady.then(() => {
+      ReactDOM.createRoot(document.getElementById("root")).render(<FFParticipate />);
+    });
+  </script>
+</body>
+</html>

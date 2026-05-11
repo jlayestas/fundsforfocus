@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request a Bid — Funds for Focus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    .ff-screen { height: auto !important; overflow: visible !important; }
+    .ff-screen-scroll { height: auto !important; overflow: visible !important; }
+    .chip-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-2);
+      transition: background .12s, border-color .12s, color .12s;
+    }
+    .chip-btn.active {
+      border-color: var(--hire);
+      background: var(--hire);
+      color: #fff;
+    }
+    @media (max-width: 960px) {
+      .bid-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <script src="js/data.js"></script>
+  <script type="text/babel" src="js/lib.js"></script>
+  <script type="text/babel">
+    function FFBid() {
+      const [form, setForm] = React.useState({
+        name: "", company: "", email: "", phone: "",
+        methodology: [], recruits: "", fieldDate: "", demographic: "", notes: "",
+      });
+      const [submitted, setSubmitted] = React.useState(false);
+
+      function set(key, val) { setForm(f => ({ ...f, [key]: val })); }
+
+      function toggleMethod(m) {
+        set("methodology", form.methodology.includes(m)
+          ? form.methodology.filter(v => v !== m)
+          : [...form.methodology, m]);
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        const body = [
+          "Name: " + form.name,
+          "Company: " + form.company,
+          "Email: " + form.email,
+          "Phone: " + form.phone,
+          "Methodology: " + form.methodology.join(", "),
+          "# of Recruits: " + form.recruits,
+          "Field Date: " + form.fieldDate,
+          "Target Demographic: " + form.demographic,
+          "Additional Notes: " + form.notes,
+        ].join("%0A");
+        window.location.href = "mailto:" + window.FF_EMAIL + "?subject=RFQ from " + encodeURIComponent(form.name || "a potential client") + "&body=" + body;
+        setSubmitted(true);
+      }
+
+      const methods = ["Focus group","IDIs","Online survey","Ethnography","Product trial","Taste test","Other"];
+
+      if (submitted) {
+        return (
+          <div className="ff-screen ff-screen-scroll">
+            <FFNav active="bid" />
+            <section style={{ padding: "120px 48px", maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+              <div className="ff-eyebrow" style={{ marginBottom: 24, color: "var(--hire-deep)" }}>RFQ submitted</div>
+              <h1 className="ff-display" style={{ fontSize: 72, lineHeight: 0.95, marginBottom: 24 }}>
+                Expect a reply<br /><em style={{ fontStyle: "italic", color: "var(--hire-deep)" }}>within 24 hours.</em>
+              </h1>
+              <p style={{ fontSize: 18, color: "var(--ink-2)", lineHeight: 1.5, maxWidth: 520, margin: "0 auto 40px" }}>
+                Elizabeth or her senior recruiter will follow up with a tailored quote, suggested screener, and realistic timeline.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                <a href="reviews.html" className="ff-btn ff-btn--hire ff-btn--lg">See what clients say →</a>
+                <a href="index.html" className="ff-btn ff-btn--ghost ff-btn--lg">Back to home</a>
+              </div>
+            </section>
+            <FFFooter />
+          </div>
+        );
+      }
+
+      return (
+        <div className="ff-screen ff-screen-scroll">
+          <FFNav active="bid" />
+
+          <section style={{ padding: "60px 48px 80px", maxWidth: 1440, margin: "0 auto", display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 80 }} className="bid-grid">
+
+            {/* Left — value props */}
+            <div>
+              <div className="ff-eyebrow" style={{ marginBottom: 14, color: "var(--hire-deep)" }}>For brands & researchers</div>
+              <h1 className="ff-display" style={{ fontSize: "clamp(56px, 7vw, 96px)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: 28 }}>
+                Send your <em style={{ fontStyle: "italic", color: "var(--hire-deep)" }}>RFQ</em>.<br />Hear back in 24h.
+              </h1>
+              <p style={{ fontSize: 18, color: "var(--ink-2)", maxWidth: 540, lineHeight: 1.5, marginBottom: 40 }}>
+                Tell us about the study. We'll come back with a tailored quote, suggested screening criteria, and a realistic timeline.
+              </p>
+
+              <ul style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                {[
+                  { k: "Last-minute friendly", v: "We routinely turn around recruits in 3–5 business days." },
+                  { k: "Rigorous screening", v: "Phone-verified, demographically validated, no panel-pros." },
+                  { k: "Competitive pricing", v: "Transparent per-recruit fees, no surprise add-ons." },
+                  { k: "Single point of contact", v: "Elizabeth or her senior recruiter from kickoff to fielding." },
+                ].map(b => (
+                  <li key={b.k} style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 24, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
+                    <span style={{ fontSize: 16, fontWeight: 500 }}>{b.k}</span>
+                    <span style={{ fontSize: 15, color: "var(--ink-2)" }}>{b.v}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div id="capabilities" style={{ marginTop: 48, padding: 24, background: "var(--paper-2)", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+                {[
+                  { v: "240+", l: "Studies completed" },
+                  { v: "94%",  l: "On-time fielding" },
+                  { v: "8 yrs", l: "Recruiting since 2018" },
+                ].map(s => (
+                  <div key={s.l}>
+                    <div className="ff-display" style={{ fontSize: 40, color: "var(--hire-deep)" }}>{s.v}</div>
+                    <div className="ff-eyebrow" style={{ marginTop: 4 }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — form */}
+            <div className="ff-card" style={{ padding: 40 }}>
+              <h3 className="ff-display" style={{ fontSize: 32, marginBottom: 8 }}>Project brief</h3>
+              <p style={{ fontSize: 14, color: "var(--ink-3)", marginBottom: 28 }}>Fields marked * are required. Confidential — we sign NDAs on request.</p>
+
+              <form onSubmit={handleSubmit}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <div className="ff-field"><label>Your name *</label><input className="ff-input" required value={form.name} onChange={e => set("name", e.target.value)} placeholder="Jane Smith" /></div>
+                  <div className="ff-field"><label>Company *</label><input className="ff-input" required value={form.company} onChange={e => set("company", e.target.value)} placeholder="Acme Insights" /></div>
+                  <div className="ff-field"><label>Work email *</label><input className="ff-input" type="email" required value={form.email} onChange={e => set("email", e.target.value)} placeholder="jane@acme.com" /></div>
+                  <div className="ff-field"><label>Phone</label><input className="ff-input" type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="(555) 555-5555" /></div>
+                </div>
+
+                <div className="ff-field">
+                  <label>Methodology *</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {methods.map(m => (
+                      <button key={m} type="button"
+                        className={"chip-btn" + (form.methodology.includes(m) ? " active" : "")}
+                        onClick={() => toggleMethod(m)}>
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <div className="ff-field"><label># of recruits *</label><input className="ff-input" required value={form.recruits} onChange={e => set("recruits", e.target.value)} placeholder="20" /></div>
+                  <div className="ff-field"><label>Field date *</label><input className="ff-input" type="date" required value={form.fieldDate} onChange={e => set("fieldDate", e.target.value)} /></div>
+                </div>
+
+                <div className="ff-field"><label>Target demographic</label><textarea className="ff-textarea" value={form.demographic} onChange={e => set("demographic", e.target.value)} placeholder="e.g. Women 35-50, HHI $75k+, primary grocery shopper, used the category in last 30 days…" rows={3} /></div>
+                <div className="ff-field"><label>Anything else we should know?</label><textarea className="ff-textarea" value={form.notes} onChange={e => set("notes", e.target.value)} placeholder="Quotas, screening sensitivities, prior recruiter pitfalls…" rows={2} /></div>
+
+                <hr className="ff-rule" style={{ margin: "12px 0 24px" }} />
+
+                <button type="submit" className="ff-btn ff-btn--hire ff-btn--lg" style={{ width: "100%", justifyContent: "center" }}>
+                  Send RFQ <span className="ff-arrow">→</span>
+                </button>
+                <p style={{ fontSize: 12, color: "var(--ink-3)", textAlign: "center", marginTop: 14 }}>
+                  We respond to all bids within one business day.
+                </p>
+              </form>
+            </div>
+          </section>
+
+          <FFFooter />
+        </div>
+      );
+    }
+
+    window.__dataReady.then(() => {
+      ReactDOM.createRoot(document.getElementById("root")).render(<FFBid />);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Current Projects — Funds for Focus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    .ff-screen { height: auto !important; overflow: visible !important; }
+    .ff-screen-scroll { height: auto !important; overflow: visible !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <script src="js/data.js"></script>
+  <script type="text/babel" src="js/lib.js"></script>
+  <script type="text/babel">
+    function FFProjects() {
+      const [projects, setProjects] = React.useState(window.FF_PROJECTS || []);
+      const [fmt, setFmt] = React.useState("All");
+      const [sort, setSort] = React.useState("Newest");
+
+      React.useEffect(() => {
+        window.__dataReady.then(() => setProjects(window.FF_PROJECTS || []));
+      }, []);
+
+      const formats = ["All", "Online", "In-Person", "In-Home", "Phone"];
+      const liveProjects = projects.filter(p => p.status === "live");
+
+      const filtered = React.useMemo(() => {
+        let list = fmt === "All" ? liveProjects : liveProjects.filter(p => p.format.includes(fmt));
+        if (sort === "Highest paid") list = [...list].sort((a, b) => b.payout - a.payout);
+        if (sort === "Filling fast") list = [...list].sort((a, b) => (a.spots / a.total) - (b.spots / b.total));
+        return list;
+      }, [projects, fmt, sort]);
+
+      function handleEmailSignup(e) {
+        e.preventDefault();
+        const email = e.target.querySelector("input").value;
+        if (email) {
+          window.location.href = "mailto:" + window.FF_EMAIL + "?subject=Newsletter Signup&body=Please add me to your study alerts.%0A%0AEmail: " + encodeURIComponent(email);
+        }
+      }
+
+      return (
+        <div className="ff-screen ff-screen-scroll">
+          <FFNav active="projects" />
+
+          <section style={{ padding: "60px 48px 30px", maxWidth: 1440, margin: "0 auto" }}>
+            <div className="ff-eyebrow" style={{ marginBottom: 14 }}>Current projects · {liveProjects.length} open</div>
+            <h1 className="ff-display" style={{ fontSize: "clamp(56px, 7vw, 96px)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: 18 }}>
+              Get paid for your<br />honest <em style={{ fontStyle: "italic", color: "var(--earn-deep)" }}>opinion</em>.
+            </h1>
+            <p style={{ fontSize: 18, color: "var(--ink-2)", maxWidth: 620, lineHeight: 1.5 }}>
+              Browse open studies below. Tap any project to take the screener — most are 2 minutes long. Not all applicants will qualify.
+            </p>
+          </section>
+
+          {/* Filter / sort bar */}
+          <div style={{ padding: "24px 48px", maxWidth: 1440, margin: "0 auto", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20, position: "sticky", top: 0, background: "var(--paper)", zIndex: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <span className="ff-eyebrow" style={{ marginRight: 6 }}>Format</span>
+              {formats.map(f => (
+                <button key={f} onClick={() => setFmt(f)}
+                  className="ff-mono"
+                  style={{ padding: "7px 12px", border: "1px solid " + (fmt === f ? "var(--ink)" : "var(--line)"), borderRadius: 999, background: fmt === f ? "var(--ink)" : "transparent", color: fmt === f ? "var(--paper)" : "var(--ink-2)", fontSize: 12, cursor: "pointer" }}>
+                  {f}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+              <span className="ff-eyebrow">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
+              <span style={{ width: 1, height: 18, background: "var(--line)" }} />
+              <span className="ff-eyebrow">Sort</span>
+              {["Newest", "Highest paid", "Filling fast"].map(s => (
+                <button key={s} onClick={() => setSort(s)} style={{ background: "transparent", border: 0, padding: "4px 0", fontSize: 13, color: sort === s ? "var(--ink)" : "var(--ink-3)", borderBottom: "1px solid " + (sort === s ? "var(--ink)" : "transparent"), cursor: "pointer" }}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Project grid */}
+          <section style={{ padding: "40px 48px 100px", maxWidth: 1440, margin: "0 auto" }}>
+            {filtered.length > 0 ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
+                {filtered.map(p => <FFProjectCard key={p.id} p={p} />)}
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: "80px 0", color: "var(--ink-3)" }}>
+                <div className="ff-display" style={{ fontSize: 48, marginBottom: 14 }}>No projects match.</div>
+                <p style={{ fontSize: 16 }}>Try a different format filter, or <a href="participate.html" style={{ color: "var(--earn)", borderBottom: "1px solid var(--earn)" }}>join our database</a> to be notified.</p>
+              </div>
+            )}
+          </section>
+
+          {/* Email signup */}
+          <section style={{ padding: "60px 48px", background: "var(--ink)", color: "var(--paper)" }}>
+            <div style={{ maxWidth: 1440, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+              <div>
+                <h2 className="ff-display" style={{ fontSize: "clamp(36px, 4vw, 56px)", lineHeight: 1.0 }}>Don't see one that fits?</h2>
+                <p style={{ marginTop: 18, fontSize: 17, color: "var(--paper-3)", maxWidth: 460 }}>
+                  Join our database. We'll email you when a study matches your demographics — no spam, no obligation.
+                </p>
+              </div>
+              <form onSubmit={handleEmailSignup} style={{ display: "flex", gap: 10 }}>
+                <input className="ff-input" type="email" required placeholder="you@email.com" style={{ background: "transparent", borderColor: "rgba(245,240,228,0.20)", color: "var(--paper)" }} />
+                <button type="submit" className="ff-btn ff-btn--earn ff-btn--lg" style={{ flexShrink: 0 }}>Get notified <span className="ff-arrow">→</span></button>
+              </form>
+            </div>
+          </section>
+
+          <FFFooter />
+        </div>
+      );
+    }
+
+    window.__dataReady.then(() => {
+      ReactDOM.createRoot(document.getElementById("root")).render(<FFProjects />);
+    });
+  </script>
+</body>
+</html>

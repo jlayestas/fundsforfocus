@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Detail — Funds for Focus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    .ff-screen { height: auto !important; overflow: visible !important; }
+    .ff-screen-scroll { height: auto !important; overflow: visible !important; }
+    @media (max-width: 900px) {
+      .detail-grid { grid-template-columns: 1fr !important; }
+      .sticky-card { position: static !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <script src="js/data.js"></script>
+  <script type="text/babel" src="js/lib.js"></script>
+  <script type="text/babel">
+    function FFProjectDetail() {
+      const [project, setProject] = React.useState(null);
+      const [notFound, setNotFound] = React.useState(false);
+
+      React.useEffect(() => {
+        window.__dataReady.then(() => {
+          const params = new URLSearchParams(window.location.search);
+          const id = params.get("id");
+          const found = (window.FF_PROJECTS || []).find(p => p.id === id);
+          if (found) {
+            setProject(found);
+            document.title = found.title + " — Funds for Focus";
+          } else {
+            setNotFound(true);
+          }
+        });
+      }, []);
+
+      if (notFound) {
+        return (
+          <div className="ff-screen ff-screen-scroll">
+            <FFNav active="projects" />
+            <div style={{ padding: "120px 48px", textAlign: "center" }}>
+              <h1 className="ff-display" style={{ fontSize: 64 }}>Couldn't load this project.</h1>
+              <p style={{ marginTop: 20, color: "var(--ink-3)", maxWidth: 480, margin: "20px auto 0" }}>
+                This sometimes happens when the connection to our project list is slow. Try refreshing — it usually works on the second attempt.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 32 }}>
+                <button className="ff-btn ff-btn--earn" onClick={() => window.location.reload()}>Refresh page →</button>
+                <a href="projects.html" className="ff-btn ff-btn--ghost">Browse all projects</a>
+              </div>
+            </div>
+            <FFFooter />
+          </div>
+        );
+      }
+
+      if (!project) {
+        return (
+          <div className="ff-screen ff-screen-scroll">
+            <FFNav active="projects" />
+            <div style={{ padding: "120px 48px", textAlign: "center", color: "var(--ink-3)" }}>
+              <div className="ff-eyebrow">Loading…</div>
+            </div>
+          </div>
+        );
+      }
+
+      const p = project;
+      const fillPct = Math.round((1 - p.spots / p.total) * 100);
+      const screenerUrl = p.formUrl || "participate.html";
+
+      return (
+        <div className="ff-screen ff-screen-scroll">
+          <FFNav active="projects" />
+
+          {/* Breadcrumb */}
+          <section style={{ padding: "32px 48px 0", maxWidth: 1440, margin: "0 auto" }}>
+            <div style={{ fontSize: 13, color: "var(--ink-3)", display: "flex", gap: 8, alignItems: "center" }}>
+              <a href="projects.html" style={{ color: "var(--ink-3)" }}>Browse projects</a>
+              <span>›</span>
+              <span style={{ color: "var(--ink)" }}>{p.title}</span>
+            </div>
+          </section>
+
+          <section style={{ padding: "40px 48px 80px", maxWidth: 1440, margin: "0 auto", display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 80 }} className="detail-grid">
+            {/* Left — details */}
+            <div>
+              <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+                <span className="ff-tag ff-tag--earn">{p.category}</span>
+                {p.isHot && <span className="ff-tag ff-tag--gold">Filling fast</span>}
+                {p.status === "live" && <span className="ff-tag ff-tag--live">Open</span>}
+              </div>
+              <h1 className="ff-display" style={{ fontSize: "clamp(44px, 5vw, 72px)", lineHeight: 0.98, letterSpacing: "-0.02em", marginBottom: 28 }}>
+                {p.title}
+              </h1>
+              <p style={{ fontSize: 19, color: "var(--ink-2)", lineHeight: 1.55, maxWidth: 600, marginBottom: 40 }}>
+                {p.eligibility}. Participants share their honest experience with our research team.
+              </p>
+
+              {/* Stats */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", border: "1px solid var(--line)", marginBottom: 48, background: "var(--card)" }}>
+                {[
+                  { k: "Payout", v: "$" + p.payout },
+                  { k: "Time", v: p.time + " min" },
+                  { k: "Format", v: p.format },
+                  { k: "Location", v: p.location },
+                ].map((s, i) => (
+                  <div key={s.k} style={{ padding: "22px 24px", borderRight: i < 3 ? "1px solid var(--line)" : 0 }}>
+                    <div className="ff-eyebrow" style={{ marginBottom: 10 }}>{s.k}</div>
+                    <div className="ff-display" style={{ fontSize: 24, lineHeight: 1.1 }}>{s.v}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Eligibility */}
+              <h3 className="ff-eyebrow" style={{ marginBottom: 18 }}>Who qualifies</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, marginBottom: 40 }}>
+                {p.eligibility.split(",").map((c, i) => (
+                  <div key={i} style={{ padding: "14px 18px", background: "var(--card)", border: "1px solid var(--line)", fontSize: 14, display: "flex", alignItems: "center", gap: 10 }}>
+                    <span className="ff-mono" style={{ color: "var(--earn)", fontSize: 12 }}>✓</span>{c.trim()}
+                  </div>
+                ))}
+              </div>
+
+              {/* Payment info */}
+              <h3 className="ff-eyebrow" style={{ marginBottom: 18 }}>Payment & schedule</h3>
+              <ul style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 40 }}>
+                {[
+                  "Complete the 2-minute online screener to apply.",
+                  "Our team will contact qualified applicants within 2 business days.",
+                  "Payment by check or Visa e-gift card within 7–10 business days of completion.",
+                  "U.S. residents only. Not all applicants will qualify.",
+                ].map(b => (
+                  <li key={b} style={{ display: "flex", gap: 14, fontSize: 16, lineHeight: 1.55, color: "var(--ink-2)" }}>
+                    <span style={{ color: "var(--earn)", marginTop: 10, width: 12, height: 1, background: "currentColor", flexShrink: 0 }}></span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Right — apply panel */}
+            <div>
+              <div className="ff-card sticky-card" style={{ padding: 32, position: "sticky", top: 32 }}>
+                <div className="ff-eyebrow" style={{ marginBottom: 8 }}>You'll earn</div>
+                <div className="ff-display" style={{ fontSize: 80, color: "var(--earn-deep)", lineHeight: 0.9, marginBottom: 6 }}>${p.payout}</div>
+                <div style={{ fontSize: 14, color: "var(--ink-3)", marginBottom: 24 }}>for {p.time >= 60 ? Math.round(p.time / 60) + " hour" + (p.time >= 120 ? "s" : "") : p.time + " minutes"} of your time</div>
+
+                <div style={{ marginBottom: 24 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 8 }}>
+                    <span className="ff-mono" style={{ color: "var(--ink-3)" }}>{p.spots} OF {p.total} SPOTS LEFT</span>
+                    <span className="ff-mono" style={{ color: "var(--earn-deep)" }}>{fillPct}% FULL</span>
+                  </div>
+                  <div className="ff-progress"><div style={{ width: fillPct + "%" }} /></div>
+                </div>
+
+                <a
+                  href={screenerUrl}
+                  target={p.formUrl ? "_blank" : "_self"}
+                  rel="noopener noreferrer"
+                  className="ff-btn ff-btn--earn ff-btn--lg"
+                  style={{ width: "100%", justifyContent: "center", display: "flex", marginBottom: 12 }}>
+                  Take 2-min screener <span className="ff-arrow">→</span>
+                </a>
+                <p style={{ fontSize: 12, color: "var(--ink-3)", textAlign: "center", lineHeight: 1.5 }}>
+                  {p.formUrl ? "Opens in a new window · Powered by Google Forms" : "You'll be guided through a short questionnaire"}<br />
+                  Not all applicants qualify · U.S. residents only
+                </p>
+
+                <hr className="ff-rule" style={{ margin: "24px 0" }} />
+
+                <div className="ff-eyebrow" style={{ marginBottom: 14 }}>Important dates</div>
+                <ul style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 14 }}>
+                  <li style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "var(--ink-3)" }}>Apply by</span>
+                    <span className="ff-mono">{p.deadline}, 2026</span>
+                  </li>
+                  <li style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "var(--ink-3)" }}>Format</span>
+                    <span className="ff-mono">{p.format}</span>
+                  </li>
+                  <li style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "var(--ink-3)" }}>Payment</span>
+                    <span className="ff-mono">Within 7–10 days</span>
+                  </li>
+                </ul>
+
+                <hr className="ff-rule" style={{ margin: "24px 0" }} />
+
+                <div style={{ display: "flex", gap: 10, fontSize: 12, color: "var(--ink-3)" }}>
+                  <a href={"mailto:" + window.FF_EMAIL + "?subject=Question about: " + encodeURIComponent(p.title)} className="ff-btn ff-btn--ghost ff-btn--sm" style={{ flex: 1, justifyContent: "center" }}>Questions?</a>
+                  <a href="projects.html" className="ff-btn ff-btn--ghost ff-btn--sm" style={{ flex: 1, justifyContent: "center" }}>Browse all</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <FFFooter />
+        </div>
+      );
+    }
+
+    window.__dataReady.then(() => {
+      ReactDOM.createRoot(document.getElementById("root")).render(<FFProjectDetail />);
+    });
+  </script>
+</body>
+</html>

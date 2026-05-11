@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Funds for Focus — Redesign</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; }
+  #root { height: 100vh; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="lib.jsx"></script>
+<script type="text/babel" src="public.jsx"></script>
+<script type="text/babel" src="ops.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "palette": "warm",
+  "density": "spacious",
+  "hero": "split",
+  "showFounderQuote": true
+}/*EDITMODE-END*/;
+
+const PALETTES = {
+  warm:  { paper: "#F5F0E4", earn: "0.48 0.10 155", hire: "0.55 0.13 40" },
+  ivory: { paper: "#FAF7EE", earn: "0.50 0.11 175", hire: "0.58 0.14 28" },
+  slate: { paper: "#EDEAE3", earn: "0.46 0.09 180", hire: "0.50 0.12 50" },
+};
+
+function applyTweaks(t) {
+  const p = PALETTES[t.palette] || PALETTES.warm;
+  const r = document.documentElement.style;
+  r.setProperty("--paper", p.paper);
+  r.setProperty("--earn", `oklch(${p.earn})`);
+  r.setProperty("--hire", `oklch(${p.hire})`);
+}
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAKS);
+  React.useEffect(() => { applyTweaks(tweaks); }, [tweaks]);
+
+  return (
+    <>
+      <DesignCanvas>
+        <DCSection id="public" title="Public site" subtitle="What participants and clients see">
+          <DCArtboard id="home"      label="01 · Home (split chooser)"        width={1440} height={5100}><FFHome/></DCArtboard>
+          <DCArtboard id="projects"  label="02 · Browse projects"             width={1440} height={2000}><FFProjects/></DCArtboard>
+          <DCArtboard id="detail"    label="03 · Project detail"              width={1440} height={1900}><FFProjectDetail/></DCArtboard>
+          <DCArtboard id="participate" label="04 · Participate (apply)"       width={1440} height={1700}><FFParticipate/></DCArtboard>
+          <DCArtboard id="bid"       label="05 · Request a bid (clients)"    width={1440} height={1700}><FFBid/></DCArtboard>
+          <DCArtboard id="reviews"   label="06 · Reviews"                     width={1440} height={1500}><FFReviews/></DCArtboard>
+        </DCSection>
+        <DCSection id="ops" title="Owner workflow (no backend)" subtitle="Elizabeth updates a Google Sheet — the site reads it. Same skills she already uses for Google Forms.">
+          <DCArtboard id="sheet"   label="07 · Google Sheet (the CMS)" width={1440} height={900}><FFOpsSheet/></DCArtboard>
+          <DCArtboard id="howto"   label="08 · How updates flow"       width={1440} height={1100}><FFOpsHowTo/></DCArtboard>
+        </DCSection>
+
+        <DCPostIt top={140} left={60} rotate={-3} width={220}>
+          Editorial-modern "warm trust." Earn-green for participants, rust for clients — colored consistently across every screen.
+        </DCPostIt>
+        <DCPostIt top={260} left={60} rotate={2} width={220}>
+          No backend: the site fetches a published Google Sheet on load. Add a row = new project. Set Status to "expired" = removed.
+        </DCPostIt>
+      </DesignCanvas>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Palette">
+          <TweakRadio label="Theme" value={tweaks.palette} onChange={v => setTweak("palette", v)}
+            options={[{value:"warm",label:"Warm"},{value:"ivory",label:"Ivory"},{value:"slate",label:"Slate"}]} />
+        </TweakSection>
+        <TweakSection title="Layout">
+          <TweakRadio label="Density" value={tweaks.density} onChange={v => setTweak("density", v)}
+            options={[{value:"spacious",label:"Spacious"},{value:"compact",label:"Compact"}]} />
+          <TweakRadio label="Hero" value={tweaks.hero} onChange={v => setTweak("hero", v)}
+            options={[{value:"split",label:"Split"},{value:"stacked",label:"Stacked"}]} />
+          <TweakToggle label="Show founder quote" value={tweaks.showFounderQuote} onChange={v => setTweak("showFounderQuote", v)} />
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

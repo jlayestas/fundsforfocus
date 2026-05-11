@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funds for Focus — Nationwide Market Research Recruiting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    .ff-screen { height: auto !important; overflow: visible !important; }
+    .ff-screen-scroll { height: auto !important; overflow: visible !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <script src="js/data.js"></script>
+  <script type="text/babel" src="js/lib.js"></script>
+  <script type="text/babel">
+    function FFHome() {
+      const [projects, setProjects] = React.useState(window.FF_PROJECTS || []);
+
+      React.useEffect(() => {
+        window.__dataReady.then(() => setProjects(window.FF_PROJECTS || []));
+      }, []);
+
+      const liveProjects = projects.filter(p => p.status === "live").slice(0, 3);
+
+      return (
+        <div className="ff-screen ff-screen-scroll">
+          <FFNav active="home" />
+
+          {/* Hero */}
+          <section style={{ padding: "80px 48px 60px", maxWidth: 1440, margin: "0 auto" }}>
+            <div className="ff-eyebrow" style={{ marginBottom: 32 }}>Nationwide Recruiting · Market Research · Est. 2018</div>
+            <h1 className="ff-display" style={{ fontSize: "clamp(60px, 9vw, 132px)", lineHeight: 1.0, letterSpacing: "-0.025em", maxWidth: 1180 }}>
+              Better research<br />
+              starts with the <em style={{ fontStyle: "italic", color: "var(--earn-deep)" }}>right</em> people<br />
+              in the room.
+            </h1>
+            <p style={{ fontSize: 20, color: "var(--ink-2)", lineHeight: 1.5, maxWidth: 640, marginTop: 56 }}>
+              We connect brands and researchers with vetted, motivated participants — and pay those participants fairly for the time they give.
+            </p>
+          </section>
+
+          {/* Audience chooser */}
+          <div className="ff-chooser">
+            <div className="ff-chooser-item ff-chooser-item--earn" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: 40 }}>
+              <div>
+                <div className="ff-eyebrow" style={{ color: "var(--earn-deep)", marginBottom: 14 }}>I want to earn money</div>
+                <h2 className="ff-display" style={{ fontSize: "clamp(32px, 4vw, 54px)", lineHeight: 1.0, marginBottom: 12 }}>
+                  Get paid <em style={{ fontStyle: "italic", color: "var(--earn-deep)" }}>$50–$400</em><br />for your honest opinion.
+                </h2>
+                <p style={{ fontSize: 16, color: "var(--ink-2)", maxWidth: 520, lineHeight: 1.5 }}>
+                  Browse open studies, take a 2-minute screener, and get scheduled. Most participants finish in under an hour and are paid by check or e-card.
+                </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+                  <a href="projects.html" className="ff-btn ff-btn--earn ff-btn--lg">Browse open projects <span className="ff-arrow">→</span></a>
+                  <a href="participate.html" className="ff-btn ff-btn--ghost ff-btn--lg">How it works</a>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingLeft: 32, borderLeft: "1px solid var(--line)" }}>
+                <div className="ff-stat-num" style={{ color: "var(--earn-deep)" }}>$<span>375K</span></div>
+                <div className="ff-eyebrow">Paid out in 2025</div>
+              </div>
+            </div>
+
+            <div className="ff-chooser-item ff-chooser-item--hire" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: 40 }}>
+              <div>
+                <div className="ff-eyebrow" style={{ color: "var(--hire-deep)", marginBottom: 14 }}>I'm a brand or researcher</div>
+                <h2 className="ff-display" style={{ fontSize: "clamp(32px, 4vw, 54px)", lineHeight: 1.0, marginBottom: 12 }}>
+                  Recruit a <em style={{ fontStyle: "italic", color: "var(--hire-deep)" }}>tough panel</em><br />in days, not weeks.
+                </h2>
+                <p style={{ fontSize: 16, color: "var(--ink-2)", maxWidth: 520, lineHeight: 1.5 }}>
+                  National database, careful screening, and last-minute turnarounds. We've staffed studies for CPG, tech, healthcare, and B2B clients since 2018.
+                </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+                  <a href="bid.html" className="ff-btn ff-btn--hire ff-btn--lg">Request a bid <span className="ff-arrow">→</span></a>
+                  <a href="bid.html#capabilities" className="ff-btn ff-btn--ghost ff-btn--lg">See capabilities</a>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingLeft: 32, borderLeft: "1px solid var(--line)" }}>
+                <div className="ff-stat-num" style={{ color: "var(--hire-deep)" }}>240<small>+</small></div>
+                <div className="ff-eyebrow">Studies recruited</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Open Projects strip */}
+          <section style={{ padding: "100px 48px", maxWidth: 1440, margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+              <FFSectionHead eyebrow="Open right now · Updated daily" title={liveProjects.length + " active projects."} />
+              <a href="projects.html" className="ff-btn ff-btn--ghost">View all <span className="ff-arrow">→</span></a>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
+              {liveProjects.map(p => <FFProjectCard key={p.id} p={p} />)}
+            </div>
+          </section>
+
+          {/* Capabilities */}
+          <section id="capabilities" style={{ padding: "20px 48px 100px", maxWidth: 1440, margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+              <FFSectionHead eyebrow="Capabilities" title="What we recruit for." sub="Eight years of fielding across nearly every methodology brands and academic teams need." />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1, background: "var(--line)", border: "1px solid var(--line)" }}>
+              {[
+                { n: "01", h: "Consumer Recruiting", b: "Targeted recruits for focus groups, IDIs, and online qual — screened to brief.", img: "Consumer · Group" },
+                { n: "02", h: "Online Journals & Blogs", b: "Multi-day digital diary studies with daily prompts and media uploads.", img: "Mobile · Diary" },
+                { n: "03", h: "Ethnographies & IDIs", b: "In-home and shop-along observation, single or multi-visit, in any U.S. metro.", img: "Home · Visit" },
+                { n: "04", h: "Product Trials & Tests", b: "We ship product to qualified households, collect structured feedback over 1–8 weeks.", img: "Trial · IHUT" },
+                { n: "05", h: "Taste Testing & CLT", b: "Central-location tests in our Miami space or facility partners coast to coast.", img: "Taste · Lab" },
+                { n: "06", h: "B2B & Hard-to-Reach", b: "C-suite, clinicians, niche professions — we've fielded all of them.", img: "B2B · Boardroom" },
+              ].map(c => (
+                <div key={c.n} style={{ background: "var(--card)", padding: 0, display: "flex", flexDirection: "column" }}>
+                  <FFImg w="100%" h={180} label={c.img} />
+                  <div style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+                    <span className="ff-mono" style={{ fontSize: 11, color: "var(--ink-3)" }}>{c.n}</span>
+                    <h3 className="ff-display" style={{ fontSize: 30, lineHeight: 1.05 }}>{c.h}</h3>
+                    <p style={{ fontSize: 14, color: "var(--ink-2)", lineHeight: 1.55, flex: 1 }}>{c.b}</p>
+                    <a href="bid.html" style={{ marginTop: 12, fontSize: 13, fontFamily: "var(--f-mono)", color: "var(--ink)", borderBottom: "1px solid var(--ink)", paddingBottom: 4, alignSelf: "flex-start" }}>Request bid →</a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Geographic Coverage */}
+          <section style={{ background: "var(--ink)", color: "var(--paper)", padding: "100px 48px" }}>
+            <div style={{ maxWidth: 1440, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 80, alignItems: "center" }}>
+              <div>
+                <div className="ff-eyebrow" style={{ color: "oklch(0.78 0.13 155)", marginBottom: 18 }}>Geographic Coverage</div>
+                <h2 className="ff-display" style={{ fontSize: "clamp(48px, 5vw, 72px)", lineHeight: 0.98, letterSpacing: "-0.025em", marginBottom: 24 }}>
+                  Nationwide<br/>fieldwork.<br/><em style={{ fontStyle: "italic", color: "oklch(0.78 0.13 155)" }}>Local</em> precision.
+                </h2>
+                <p style={{ fontSize: 17, color: "var(--paper-3)", lineHeight: 1.55, marginBottom: 36, maxWidth: 460 }}>
+                  Headquartered in Miami, with active recruiter networks in 38 metro areas and the ability to spin up new markets in 5–7 days.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, background: "rgba(245,240,228,0.10)", border: "1px solid rgba(245,240,228,0.10)" }}>
+                  {["Atlanta","Austin","Boston","Chicago","Dallas","Denver","Detroit","Houston","Los Angeles","Miami","Minneapolis","NYC","Philadelphia","Phoenix","Portland","Seattle"].map(city => (
+                    <div key={city} style={{ background: "var(--ink)", padding: "14px 18px", fontSize: 14, fontFamily: "var(--f-mono)", color: "var(--paper-2)", display: "flex", justifyContent: "space-between" }}>
+                      <span>{city}</span><span style={{ color: "oklch(0.78 0.13 155)" }}>●</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="ff-mono" style={{ fontSize: 12, color: "var(--ink-4)", marginTop: 20 }}>+ 22 secondary markets · ask about your city</p>
+              </div>
+
+              <div style={{ position: "relative", aspectRatio: "16/10", background: "rgba(245,240,228,0.04)", border: "1px solid rgba(245,240,228,0.08)" }}>
+                <svg viewBox="0 0 600 360" style={{ width: "100%", height: "100%" }}>
+                  {Array.from({length: 28}).map((_, row) => Array.from({length: 48}).map((_, col) => {
+                    const x = 20 + col * 12, y = 30 + row * 11;
+                    const cx = (col - 24) / 24, cy = (row - 14) / 14;
+                    const inUS =
+                      (cy > -0.6 && cy < 0.5) &&
+                      (cx > -0.95 && cx < 0.95) &&
+                      (Math.abs(cx) < 0.7 + cy * 0.2) &&
+                      !(cx < -0.7 && cy < -0.2) &&
+                      !(cx > 0.7 && cy > 0.3) &&
+                      !(cx < -0.5 && cy > 0.4) &&
+                      !(cx > 0.6 && cy < -0.3);
+                    if (!inUS) return null;
+                    return <circle key={`${row}-${col}`} cx={x} cy={y} r="1.5" fill="rgba(245,240,228,0.20)" />;
+                  }))}
+                  {[
+                    { x: 470, y: 240, name: "Miami" },
+                    { x: 380, y: 200, name: "Atlanta" },
+                    { x: 260, y: 130, name: "Chicago" },
+                    { x: 440, y: 110, name: "NYC" },
+                    { x: 200, y: 230, name: "Austin" },
+                    { x: 90,  y: 180, name: "LA" },
+                    { x: 110, y: 100, name: "Seattle" },
+                    { x: 220, y: 170, name: "Denver" },
+                    { x: 410, y: 160, name: "DC" },
+                    { x: 320, y: 240, name: "Houston" },
+                  ].map(c => (
+                    <g key={c.name}>
+                      <circle cx={c.x} cy={c.y} r="9" fill="oklch(0.78 0.13 155 / 0.20)" />
+                      <circle cx={c.x} cy={c.y} r="4" fill="oklch(0.78 0.13 155)" />
+                      <text x={c.x + 10} y={c.y + 4} fill="var(--paper-2)" fontSize="10" fontFamily="monospace">{c.name}</text>
+                    </g>
+                  ))}
+                </svg>
+                <div style={{ position: "absolute", top: 16, left: 16, fontFamily: "var(--f-mono)", fontSize: 11, color: "var(--paper-3)", letterSpacing: "0.10em" }}>
+                  ACTIVE RECRUITERS · 38 METROS
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Process */}
+          <section style={{ background: "var(--paper-2)", padding: "100px 48px" }}>
+            <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+              <FFSectionHead eyebrow="The process" title="Plain and predictable." />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32, marginTop: 60 }}>
+                {[
+                  { step: "01", h: "Browse or apply", b: "Pick a study you'd like to join, or fill out the general application to be considered for future projects." },
+                  { step: "02", h: "Quick screener", b: "A 2-minute set of questions confirms you fit the study's demographic quotas." },
+                  { step: "03", h: "Get scheduled", b: "If you qualify, our team reaches out to confirm time, format, and what to expect." },
+                  { step: "04", h: "Participate & get paid", b: "Show up, share your honest opinion, and we send payment within 7–10 business days." },
+                ].map(s => (
+                  <div key={s.step}>
+                    <div className="ff-mono" style={{ fontSize: 12, color: "var(--ink-3)", marginBottom: 24 }}>STEP {s.step}</div>
+                    <h3 className="ff-display" style={{ fontSize: 32, marginBottom: 12 }}>{s.h}</h3>
+                    <p style={{ fontSize: 15, color: "var(--ink-2)", lineHeight: 1.55 }}>{s.b}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Founder quote */}
+          <section style={{ padding: "120px 48px", maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+            <div className="ff-eyebrow" style={{ marginBottom: 24 }}>From the founder</div>
+            <p className="ff-display" style={{ fontSize: "clamp(32px, 4vw, 56px)", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+              "I started this company because I'd been on both sides of the table — running studies, and answering screeners. <em style={{ fontStyle: "italic", color: "var(--earn-deep)" }}>Both deserved better.</em>"
+            </p>
+            <div style={{ marginTop: 40, display: "inline-flex", alignItems: "center", gap: 14 }}>
+              <FFImg w={56} h={56} label="EG" style={{ borderRadius: "50%" }} />
+              <div style={{ textAlign: "left" }}>
+                <div style={{ fontSize: 15, fontWeight: 500 }}>Elizabeth Gonzalez</div>
+                <div className="ff-eyebrow">Founder</div>
+              </div>
+            </div>
+          </section>
+
+          <FFFooter />
+        </div>
+      );
+    }
+
+    window.__dataReady.then(() => {
+      ReactDOM.createRoot(document.getElementById("root")).render(<FFHome />);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews — Funds for Focus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--paper); }
+    .ff-screen { height: auto !important; overflow: visible !important; }
+    .ff-screen-scroll { height: auto !important; overflow: visible !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <script src="js/data.js"></script>
+  <script type="text/babel" src="js/lib.js"></script>
+  <script type="text/babel">
+    function FFReviews() {
+      const [reviews, setReviews] = React.useState(window.FF_REVIEWS || []);
+
+      React.useEffect(() => {
+        window.__dataReady.then(() => setReviews(window.FF_REVIEWS || []));
+      }, []);
+
+      return (
+        <div className="ff-screen ff-screen-scroll">
+          <FFNav active="reviews" />
+
+          <section style={{ padding: "60px 48px 60px", maxWidth: 1440, margin: "0 auto" }}>
+            <div className="ff-eyebrow" style={{ marginBottom: 14 }}>Reviews · Verified participants & clients</div>
+            <h1 className="ff-display" style={{ fontSize: "clamp(64px, 8vw, 120px)", lineHeight: 0.95, letterSpacing: "-0.025em" }}>
+              What people<br />say about<br />working with us.
+            </h1>
+            <div style={{ marginTop: 40, display: "flex", gap: 60, alignItems: "baseline", flexWrap: "wrap" }}>
+              <div>
+                <div className="ff-display" style={{ fontSize: 80, lineHeight: 1, color: "var(--earn-deep)" }}>
+                  4.9<span style={{ fontSize: 32, color: "var(--ink-3)" }}>/5</span>
+                </div>
+                <div className="ff-eyebrow" style={{ marginTop: 6 }}>Average across 187 reviews</div>
+              </div>
+              <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
+                {[
+                  { v: "98%", l: "Paid on time" },
+                  { v: "94%", l: "Would recommend" },
+                  { v: "240+", l: "Studies fielded" },
+                ].map(s => (
+                  <div key={s.l}>
+                    <div className="ff-display" style={{ fontSize: 36 }}>{s.v}</div>
+                    <div className="ff-eyebrow">{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section style={{ padding: "0 48px 100px", maxWidth: 1440, margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+              {reviews.map(r => (
+                <div key={r.name} className="ff-card" style={{ padding: 36, display: "flex", flexDirection: "column", gap: 24, minHeight: 320 }}>
+                  <span className="ff-eyebrow">{r.role.includes("Participant") ? "Participant" : "Client"}</span>
+                  <p className="ff-display" style={{ fontSize: 28, lineHeight: 1.2, flex: 1 }}>"{r.quote}"</p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 20, borderTop: "1px solid var(--line)" }}>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 500 }}>{r.name}</div>
+                      <div style={{ fontSize: 13, color: "var(--ink-3)" }}>{r.role}</div>
+                    </div>
+                    <div className="ff-mono" style={{ fontSize: 13, color: r.role.includes("Participant") ? "var(--earn-deep)" : "var(--hire-deep)" }}>
+                      {r.payout}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA strip */}
+          <section style={{ padding: "80px 48px", background: "var(--ink)", color: "var(--paper)" }}>
+            <div style={{ maxWidth: 1440, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+              <div>
+                <h2 className="ff-display" style={{ fontSize: "clamp(40px, 4vw, 60px)", lineHeight: 1.0, marginBottom: 18 }}>
+                  Ready to join them?
+                </h2>
+                <p style={{ fontSize: 17, color: "var(--paper-3)", maxWidth: 460, lineHeight: 1.55 }}>
+                  Whether you're looking to earn money by participating or need to recruit the right panel, we're ready to help.
+                </p>
+              </div>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <a href="projects.html" className="ff-btn ff-btn--earn ff-btn--lg">Browse projects <span className="ff-arrow">→</span></a>
+                <a href="bid.html" className="ff-btn ff-btn--hire ff-btn--lg">Request a bid <span className="ff-arrow">→</span></a>
+              </div>
+            </div>
+          </section>
+
+          <FFFooter />
+        </div>
+      );
+    }
+
+    window.__dataReady.then(() => {
+      ReactDOM.createRoot(document.getElementById("root")).render(<FFReviews />);
+    });
+  </script>
+</body>
+</html>
